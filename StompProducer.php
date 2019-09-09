@@ -37,6 +37,9 @@ class StompProducer implements Producer
         InvalidDestinationException::assertDestinationInstanceOf($destination, StompDestination::class);
         InvalidMessageException::assertMessageInstanceOf($message, StompMessage::class);
 
+        //set persistence
+        $message->setPersistent(true);
+
         $headers = array_merge($message->getHeaders(), $destination->getHeaders());
         $headers = StompHeadersEncoder::encode($headers, $message->getProperties());
 
