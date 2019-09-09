@@ -21,6 +21,11 @@ class StompProducer implements Producer
     private $stomp;
 
     /**
+     * @var DeliveryDelay
+     */
+    private $deliveryDelay;
+
+    /**
      * @param Client $stomp
      */
     public function __construct(Client $stomp)
@@ -40,6 +45,9 @@ class StompProducer implements Producer
         //set persistence
         $message->setPersistent(true);
 
+        //set delivery delay
+        $message->setHeader('AMQ_SCHEDULED_DELAY',$this->deliveryDelay);
+
         $headers = array_merge($message->getHeaders(), $destination->getHeaders());
         $headers = StompHeadersEncoder::encode($headers, $message->getProperties());
 
@@ -50,17 +58,17 @@ class StompProducer implements Producer
 
     public function setDeliveryDelay(int $deliveryDelay = null): Producer
     {
-        //adding 0 makes sure we are good for retries
-        if (null === $deliveryDelay || 0===$deliveryDelay) {
-            return $this;
-        }
+        //default delay of 0
+        if(is_null($deliveryDelay))
+            $deliveryDelay=0;
 
-        throw new \LogicException('Not implemented');
+        $this->deliveryDelay=$deliveryDelay;
+        return $this;
     }
 
     public function getDeliveryDelay(): ?int
     {
-        return null;
+        return $this->deliveryDelay;
     }
 
     public function setPriority(int $priority = null): Producer
