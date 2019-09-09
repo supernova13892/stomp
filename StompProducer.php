@@ -47,7 +47,8 @@ class StompProducer implements Producer
 
     public function setDeliveryDelay(int $deliveryDelay = null): Producer
     {
-        if (null === $deliveryDelay) {
+        //adding 0 makes sure we are good for retries
+        if (null === $deliveryDelay || 0===$deliveryDelay) {
             return $this;
         }
 
