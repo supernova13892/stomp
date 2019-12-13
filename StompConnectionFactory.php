@@ -24,6 +24,8 @@ class StompConnectionFactory implements ConnectionFactory
      */
     private $stomp;
 
+    private $failoverUrl;
+
     /**
      * $config = [
      * 'host' => null,
@@ -47,6 +49,8 @@ class StompConnectionFactory implements ConnectionFactory
      */
     public function __construct($config = 'stomp:')
     {
+        $this->failoverUrl=config('queue.connections.interop.failover_url');
+
         if (empty($config) || 'stomp:' === $config) {
             $config = [];
         } elseif (is_string($config)) {
@@ -86,7 +90,11 @@ class StompConnectionFactory implements ConnectionFactory
             $config = $this->config;
 
             $scheme = (true === $config['ssl_on']) ? 'ssl' : 'tcp';
-            $uri = $scheme.'://'.$config['host'].':'.$config['port'];
+            if(is_null($this->failoverUrl))
+                $uri = $scheme.'://'.$config['host'].':'.$config['port'];
+            else
+                $uri=$this->failoverUrl;
+                
             $connection = new Connection($uri, $config['connection_timeout']);
 
             $this->stomp = new BufferedStompClient($connection, $config['buffer_size']);
