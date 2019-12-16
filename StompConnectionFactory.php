@@ -90,11 +90,13 @@ class StompConnectionFactory implements ConnectionFactory
             $config = $this->config;
 
             $scheme = (true === $config['ssl_on']) ? 'ssl' : 'tcp';
-            if(is_null($this->failoverUrl))
-                $uri = $scheme.'://'.$config['host'].':'.$config['port'];
+
+            $failoverUrl=config('queue.connections.interop.failover_url');
+            if(isset($failoverUrl))
+                $uri=$failoverUrl;
             else
-                $uri=$this->failoverUrl;
-                
+                $uri = $scheme.'://'.$config['host'].':'.$config['port'];
+
             $connection = new Connection($uri, $config['connection_timeout']);
 
             $this->stomp = new BufferedStompClient($connection, $config['buffer_size']);
