@@ -107,6 +107,8 @@ class StompConnectionFactory implements ConnectionFactory
             $this->stomp->connect();
 
             try{
+                //trying to echo it, for a minor test
+                echo "Queue Worker connected to the broker on host: ".$this->stomp->getConnection()->getHost();
                 info("Queue Worker connected to the broker on host: ".$this->stomp->getConnection()->getHost());
             }
             catch(\Exception $e){
