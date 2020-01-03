@@ -105,6 +105,13 @@ class StompConnectionFactory implements ConnectionFactory
             $this->stomp->setSync($config['sync']);
 
             $this->stomp->connect();
+
+            try{
+                info("Queue Worker connected to the broker on host: ".$this->stomp->getConnection()->getHost());
+            }
+            catch(\Exception $e){
+                \Log::error("Could not get connected host(on the queue worker) for the broker!");
+            }
         }
 
         return $this->stomp;
